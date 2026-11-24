@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestion Boutique</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ec;--card:#fff;--ink:#2a2118;--muted:#6b5f50;--line:#e3dccd;--accent:#a8581a;--accent-ink:#fff;--ochre:#c9821b;--good:#1f7a4d;--good-bg:#e4f4ec;--warn:#9a4d00;--warn-bg:#fdf0dc;--bad:#a12626;--bad-bg:#fbe7e7;--display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Source Sans 3','Segoe UI',system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1812;--card:#2a231a;--ink:#f3ece0;--muted:#b9ab97;--line:#44392b;--accent:#f0a867;--accent-ink:#2a1606;--ochre:#e0a247;--good:#6fd3a1;--good-bg:#17382b;--warn:#f0b866;--warn-bg:#3a2b12;--bad:#f19a9a;--bad-bg:#3d1c1c;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.5 var(--body)}
+.band{height:8px;background:repeating-linear-gradient(90deg,var(--ink) 0 16px,var(--ochre) 16px 22px,var(--ink) 22px 38px,transparent 38px 46px)}
+.top{max-width:960px;margin:0 auto;padding:12px 16px 4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.logo{font:700 1.25rem var(--display)}.logo span{background:var(--ochre);color:#fff;border-radius:6px;padding:0 7px;font-size:.85rem;margin-left:4px}
+#tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:8px 16px;max-width:960px;margin:0 auto;border-bottom:1px solid var(--line)}
+#tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:600 .95rem var(--body);cursor:pointer;min-height:40px}
+#tabs button[aria-selected=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+main{max-width:960px;margin:0 auto;padding:16px 16px 60px}
+h1{font:700 1.9rem/1.1 var(--display);margin:8px 0 10px}h2{font:700 1.25rem var(--display);margin:20px 0 10px}h3{font:700 1.05rem var(--display);margin:0 0 4px}
+p{margin:0 0 10px}.muted{color:var(--muted)}.small{font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.grid{display:grid;gap:10px}.g2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+label{display:block;font-weight:600;font-size:.9rem;margin:8px 0 4px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:11px 18px;font:600 1rem var(--body);cursor:pointer;text-decoration:none;min-height:44px}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}.btn.sm{padding:6px 12px;min-height:36px;font-size:.9rem}.btn.bad{background:var(--bad-bg);color:var(--bad)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.between{justify-content:space-between}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.82rem;font-weight:600}.pill.ok{background:var(--good-bg);color:var(--good)}.pill.no{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.lock{background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:12px 14px;margin:10px 0}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.big{font:700 1.7rem var(--display);font-variant-numeric:tabular-nums}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:90vw}#toast.on{opacity:1}
+.paper{background:#fff;color:#1a1a1a;border:1px solid var(--line);border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.12);padding:24px;font:13px/1.5 Arial,Helvetica,sans-serif;overflow-wrap:anywhere}
+.paper h1{font:700 20px Arial;margin:0;color:#a8581a}.paper table{margin:10px 0}.paper th,.paper td{border:1px solid #ccc;color:#1a1a1a;font-size:12px}.paper th{background:#f4e9dc}.paper .r{text-align:right}.paper .wm{margin-top:14px;font-size:10px;color:#999;text-align:center}
+@media print{@page{size:A4;margin:12mm}body.pinv *{visibility:hidden}body.pinv #invprev,body.pinv #invprev *{visibility:visible}body.pinv #invprev{position:absolute;left:0;top:0;width:100%;border:0;box-shadow:none;padding:0}}
+</style>
+</head>
+<body>
+<div class="band" aria-hidden="true"></div>
+<header class="top"><div class="logo" id="logo">Gestion Boutique<span>Mali</span></div><button class="btn sm ghost" id="badge" data-t="pro"></button></header>
+<nav id="tabs" aria-label="Sections"></nav>
+<main>
+<section id="t-vente"></section><section id="t-stock" hidden></section><section id="t-cli" hidden></section><section id="t-cer" hidden></section><section id="t-fac" hidden></section><section id="t-bilan" hidden></section><section id="t-pro" hidden></section><section id="t-admin" hidden></section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ===== Réglages ===== */
+const CFG={wa:'22375131158',price:5000,salt:'Bq-shop-2026-m8Rd',prefix:'BTQ',freeProd:15,freeCli:10};
+/* ==================== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const n=parseFloat(String(v==null?'':v).replace(',','.'));return isNaN(n)?0:n};
+const fmt=n=>Math.round(n).toLocaleString('fr-FR');const qf=n=>(Math.round(n*100)/100).toLocaleString('fr-FR');
+const today=()=>new Date().toISOString().slice(0,10);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3200)}
+function h53(str){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0,c;i<str.length;i++){c=str.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0)}
+const AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function sum(b){let n=h53(CFG.salt+b),s='';for(let i=0;i<4;i++){s+=AL[n%32];n=Math.floor(n/32)}return s}
+function mkCode(){let b='';for(let i=0;i<4;i++)b+=AL[Math.floor(Math.random()*32)];return CFG.prefix+'-'+b+'-'+sum(b)}
+function okCode(c){const m=new RegExp('^'+CFG.prefix+'-([A-Z0-9]{4})-([A-Z0-9]{4})$').exec(String(c||'').trim().toUpperCase());return !!m&&sum(m[1])===m[2]}
+const KEY='gestionboutique_v1';let S={};
+function load(){let o=null;try{o=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+S=Object.assign({shop:{msg:'Merci de votre confiance.'},prods:[],cli:[],sales:[],pay:[],loans:[],cart:[],next:1,fn:1,pro:'',reg:[],pin:''},o||{})}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const isPro=()=>okCode(S.pro);
+function getP(p){return p.split('.').reduce((o,k)=>o==null?undefined:o[k],S)}
+function setP(p,v){const k=p.split('.');let o=S;for(let i=0;i<k.length-1;i++){if(o[k[i]]==null)o[k[i]]={};o=o[k[i]]}o[k[k.length-1]]=v}
+function F(p,label,o={}){const v=esc(getP(p)==null?'':getP(p));const ph=esc(o.ph||'');
+if(o.rows)return `<label for="f-${p}">${label}</label><textarea id="f-${p}" data-p="${p}" rows="${o.rows}" placeholder="${ph}">${v}</textarea>`;
+return `<label for="f-${p}">${label}</label><input id="f-${p}" data-p="${p}" type="${o.type||'text'}" ${o.type==='number'?'inputmode="decimal"':''} value="${v}" placeholder="${ph}">`}
+const TABS=[['vente','Vente'],['stock','Stock'],['cli','Clients'],['cer','Céréales'],['fac','Factures'],['bilan','Bilan'],['pro','Passer Pro']];
+let curInv=null;
+function go(t){$$('main>section').forEach(s=>s.hidden=s.id!=='t-'+t);$$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));
+({vente:rVente,stock:rStock,cli:rCli,cer:rCer,fac:rFac,bilan:rBilan,pro:rPro,admin:rAdmin})[t]();scrollTo(0,0);badge()}
+function badge(){const b=$('#badge');b.textContent=isPro()?'Pro activé ✓':'Gratuit · Passer Pro';b.dataset.t='pro'}
+const cliName=id=>{const c=S.cli.find(x=>x.id===id);return c?c.nom||'Client':'Client de passage'};
+function dette(cid){const d=S.sales.filter(s=>s.cid===cid).reduce((a,s)=>a+(s.total-s.paye),0);const p=S.pay.filter(x=>x.cid===cid).reduce((a,x)=>a+x.m,0);return d-p}
+/* ===== Vente ===== */
+function cartTotal(){return S.cart.reduce((a,l)=>a+l.qte*l.pv,0)}
+function rVente(){
+if(!S.prods.length){$('#t-vente').innerHTML=`<h1>Vente</h1><div class="lock">Ajoutez d'abord vos produits dans l'onglet Stock. <button class="btn sm" data-t="stock">Aller au stock</button></div>`;return}
+$('#t-vente').innerHTML=`<h1>Vente</h1>
+<div class="card"><label for="vp">Produit</label><select id="vp">${S.prods.map(p=>`<option value="${p.id}">${esc(p.nom||'Produit')} · ${qf(num(p.stock))} ${esc(p.unite||'')} en stock · ${fmt(num(p.pv))} FCFA</option>`).join('')}</select>
+<div class="row" style="margin-top:8px;align-items:flex-end"><div style="flex:1"><label for="vq">Quantité</label><input id="vq" type="number" inputmode="decimal" value="1"></div><button class="btn" data-act="cadd">Ajouter</button></div></div>
+<div class="card"><h3>Panier</h3>${S.cart.length?`<table>${S.cart.map((l,i)=>`<tr><td>${esc(l.nom)}</td><td>${qf(l.qte)} × ${fmt(l.pv)}</td><td><b>${fmt(l.qte*l.pv)}</b></td><td><button class="btn sm bad" data-act="cdel" data-i="${i}" aria-label="Retirer">×</button></td></tr>`).join('')}</table><div class="big">${fmt(cartTotal())} FCFA</div>
+<div class="grid g3"><div><label for="vm">Paiement</label><select id="vm"><option>Comptant</option><option>Crédit</option></select></div><div><label for="vc">Client</label><select id="vc"><option value="">Client de passage</option>${S.cli.map(c=>`<option value="${c.id}">${esc(c.nom||'Client')}</option>`).join('')}</select></div><div><label for="vpay">Montant payé (si crédit)</label><input id="vpay" type="number" inputmode="decimal" value="0"></div></div>
+<button class="btn" data-act="cok" style="margin-top:12px">Valider la vente</button>`:'<p class="muted">Le panier est vide.</p>'}</div>`}
+/* ===== Stock ===== */
+function rStock(){const low=S.prods.filter(p=>num(p.stock)<=num(p.seuil)&&p.nom).length;
+$('#t-stock').innerHTML=`<h1>Stock</h1><p class="muted">${S.prods.length} produit(s)${isPro()?'':' sur '+CFG.freeProd+' en version gratuite'}.${low?` <span class="pill no">${low} à réapprovisionner</span>`:''}</p>
+${S.prods.map((p,i)=>`<div class="card"><div class="row between"><h3>${esc(p.nom||'Nouveau produit')}</h3>${num(p.stock)<=num(p.seuil)?'<span class="pill no">Stock bas</span>':''}</div>
+${F('prods.'+i+'.nom','Nom',{ph:'Sucre, riz, huile…'})}<div class="grid g3">${F('prods.'+i+'.unite','Unité',{ph:'kg, sac, litre'})}${F('prods.'+i+'.pa','Prix d\'achat',{type:'number'})}${F('prods.'+i+'.pv','Prix de vente',{type:'number'})}${F('prods.'+i+'.stock','En stock',{type:'number'})}${F('prods.'+i+'.seuil','Alerte à',{type:'number'})}</div>
+<div class="row" style="margin-top:8px;align-items:flex-end"><div style="flex:1;max-width:200px"><label for="aj${i}">Entrée de stock</label><input id="aj${i}" type="number" inputmode="decimal" placeholder="Quantité reçue"></div><button class="btn sm ghost" data-act="sin" data-i="${i}">Ajouter au stock</button><button class="btn sm bad" data-act="pdel" data-i="${i}">Supprimer</button></div></div>`).join('')}
+<button class="btn" data-act="padd">+ Nouveau produit</button>`}
+/* ===== Clients ===== */
+function rCli(){
+$('#t-cli').innerHTML=`<h1>Clients</h1><p class="muted">${S.cli.length} client(s)${isPro()?'':' sur '+CFG.freeCli+' en version gratuite'}. Le crédit se suit ici.</p>
+${S.cli.map((c,i)=>{const d=dette(c.id);return `<div class="card"><div class="row between"><h3>${esc(c.nom||'Nouveau client')}</h3>${d>0?`<span class="pill bad">Doit ${fmt(d)} FCFA</span>`:'<span class="pill ok">À jour</span>'}</div>
+${F('cli.'+i+'.nom','Nom et prénom')}<div class="grid g2">${F('cli.'+i+'.fonction','Fonction')}${F('cli.'+i+'.tel','Téléphone')}</div>${F('cli.'+i+'.adr','Adresse')}<div class="grid g2">${F('cli.'+i+'.banque','Banque ou mobile money')}${F('cli.'+i+'.compte','Numéro de compte')}</div>
+${d>0?`<div class="row" style="margin-top:8px;align-items:flex-end"><div style="flex:1;max-width:200px"><label for="en${i}">Encaisser un paiement</label><input id="en${i}" type="number" inputmode="decimal"></div><button class="btn sm" data-act="enc" data-i="${i}">Encaisser</button></div>`:''}<button class="btn sm bad" data-act="cldel" data-i="${i}" style="margin-top:8px">Supprimer</button></div>`}).join('')}
+<button class="btn" data-act="cladd">+ Nouveau client</button>`}
+/* ===== Céréales (Pro) ===== */
+function rCer(){const el=$('#t-cer');
+if(!isPro()){el.innerHTML=`<h1>Prêts de céréales</h1><div class="lock">Le suivi des prêts de céréales est réservé au Pro : qui a emprunté quoi, combien il doit rendre, les retours et le reste à recevoir. <button class="btn sm" data-t="pro">Passer Pro</button></div>`;return}
+el.innerHTML=`<h1>Prêts de céréales</h1><div class="card"><div class="grid g2"><div><label for="lc">Client</label><select id="lc"><option value="">Choisir…</option>${S.cli.map(c=>`<option value="${c.id}">${esc(c.nom||'Client')}</option>`).join('')}</select></div><div><label for="ln">Céréale</label><input id="ln" placeholder="Mil, maïs, riz, sorgho"></div><div><label for="lq">Quantité prêtée (kg)</label><input id="lq" type="number" inputmode="decimal"></div><div><label for="lr">Quantité à rendre (kg)</label><input id="lr" type="number" inputmode="decimal"></div><div><label for="ld">Date limite</label><input id="ld" type="date"></div></div><button class="btn" data-act="ladd" style="margin-top:10px">Enregistrer le prêt</button></div>
+${S.loans.length?S.loans.map((l,i)=>{const rendu=(l.ret||[]).reduce((a,x)=>a+x.q,0),reste=num(l.rendre)-rendu;const late=reste>0&&l.lim&&l.lim<today();return `<div class="card"><div class="row between"><h3>${esc(cliName(l.cid))} · ${esc(l.cer)}</h3>${reste<=0?'<span class="pill ok">Soldé</span>':late?'<span class="pill bad">En retard</span>':'<span class="pill no">En cours</span>'}</div><p class="small muted">Prêté ${qf(num(l.qte))} kg le ${esc(l.date)} · à rendre ${qf(num(l.rendre))} kg${l.lim?' avant le '+esc(l.lim):''}<br>Rendu ${qf(rendu)} kg · <b>reste ${qf(Math.max(0,reste))} kg</b></p>${reste>0?`<div class="row" style="align-items:flex-end"><div style="flex:1;max-width:180px"><label for="lr${i}">Retour (kg)</label><input id="lr${i}" type="number" inputmode="decimal"></div><button class="btn sm" data-act="lret" data-i="${i}">Enregistrer</button></div>`:''}<button class="btn sm bad" data-act="ldel" data-i="${i}" style="margin-top:8px">Supprimer</button></div>`}).join(''):'<p class="muted">Aucun prêt enregistré.</p>'}`}
+/* ===== Factures ===== */
+function rFac(){const el=$('#t-fac');
+if(curInv!=null){const s=S.sales.find(x=>x.id===curInv);if(s){el.innerHTML=`<div class="row" style="margin-bottom:10px"><button class="btn sm ghost" data-act="fback">← Retour</button><button class="btn" data-act="fprint">Imprimer / PDF</button><button class="btn ghost" data-act="fdl">Télécharger</button></div>${isPro()?'':'<div class="lock">Impression et téléchargement réservés au Pro.</div>'}<div class="paper" id="invprev">${invHTML(s)}</div>`;return}curInv=null}
+el.innerHTML=`<h1>Factures</h1><p class="muted">Chaque vente génère une facture. Touchez-en une pour l'ouvrir.</p>
+${S.sales.length?`<div class="card" style="overflow-x:auto"><table><tr><th>N°</th><th>Date</th><th>Client</th><th>Total</th><th></th></tr>${S.sales.slice().reverse().map(s=>`<tr><td>${esc(s.n)}</td><td>${esc(s.date)}</td><td>${esc(cliName(s.cid))}</td><td>${fmt(s.total)}${s.total>s.paye?` <span class="pill bad">reste ${fmt(s.total-s.paye)}</span>`:''}</td><td><button class="btn sm ghost" data-act="fopen" data-i="${s.id}">Ouvrir</button></td></tr>`).join('')}</table></div>`:'<p class="muted">Aucune vente pour le moment.</p>'}`}
+function invHTML(s){const c=S.cli.find(x=>x.id===s.cid),sh=S.shop;
+return `<h1>${esc(sh.nom||'Ma boutique')}</h1><div>${esc(sh.adr||'')} ${sh.tel?'· Tél. '+esc(sh.tel):''}</div><h4 style="margin:14px 0 2px;font-size:15px">Facture ${esc(s.n)}</h4><div>Date : ${esc(s.date)}</div><div>Client : <b>${esc(cliName(s.cid))}</b>${c&&c.adr?' · '+esc(c.adr):''}${c&&c.tel?' · '+esc(c.tel):''}</div>
+<table><tr><th>Désignation</th><th class="r">Qté</th><th class="r">Prix</th><th class="r">Total</th></tr>${s.lines.map(l=>`<tr><td>${esc(l.nom)}</td><td class="r">${qf(l.qte)}</td><td class="r">${fmt(l.pv)}</td><td class="r">${fmt(l.qte*l.pv)}</td></tr>`).join('')}<tr><td colspan="3"><b>Total</b></td><td class="r"><b>${fmt(s.total)} FCFA</b></td></tr><tr><td colspan="3">Payé (${esc(s.mode)})</td><td class="r">${fmt(s.paye)}</td></tr>${s.total>s.paye?`<tr><td colspan="3"><b>Reste à payer</b></td><td class="r"><b>${fmt(s.total-s.paye)}</b></td></tr>`:''}</table><div>${esc(sh.msg||'')}</div>${isPro()?'':'<div class="wm">Facture générée avec Gestion Boutique · version gratuite</div>'}`}
+/* ===== Bilan ===== */
+function rBilan(){const t=today(),m=t.slice(0,7);
+const sum2=(f,key)=>S.sales.filter(f).reduce((a,s)=>a+key(s),0);
+const marge=s=>s.lines.reduce((a,l)=>a+(l.pv-l.pa)*l.qte,0);
+const jour=S.sales.filter(s=>s.date===t),mois=S.sales.filter(s=>s.date.slice(0,7)===m);
+const dettes=S.cli.reduce((a,c)=>a+Math.max(0,dette(c.id)),0);const val=S.prods.reduce((a,p)=>a+num(p.stock)*num(p.pa),0);
+const top={};S.sales.forEach(s=>s.lines.forEach(l=>top[l.nom]=(top[l.nom]||0)+l.qte*l.pv));const tp=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
+const low=S.prods.filter(p=>p.nom&&num(p.stock)<=num(p.seuil));
+$('#t-bilan').innerHTML=`<h1>Bilan</h1><div class="grid g2"><div class="card"><div class="small muted">Ventes du jour (${jour.length})</div><div class="big">${fmt(jour.reduce((a,s)=>a+s.total,0))} FCFA</div><div class="small muted">Bénéfice estimé : ${fmt(jour.reduce((a,s)=>a+marge(s),0))} FCFA</div></div>
+<div class="card"><div class="small muted">Ventes du mois (${mois.length})</div><div class="big">${fmt(mois.reduce((a,s)=>a+s.total,0))} FCFA</div><div class="small muted">Bénéfice estimé : ${fmt(mois.reduce((a,s)=>a+marge(s),0))} FCFA</div></div>
+<div class="card"><div class="small muted">Crédits à recevoir</div><div class="big">${fmt(dettes)} FCFA</div></div><div class="card"><div class="small muted">Valeur du stock (prix d'achat)</div><div class="big">${fmt(val)} FCFA</div></div></div>
+<div class="card"><h3>Produits les plus vendus</h3>${tp.length?'<table>'+tp.map(x=>`<tr><td>${esc(x[0])}</td><td>${fmt(x[1])} FCFA</td></tr>`).join('')+'</table>':'<p class="muted small">Pas encore de ventes.</p>'}</div>
+<div class="card"><h3>À réapprovisionner</h3>${low.length?'<table>'+low.map(p=>`<tr><td>${esc(p.nom)}</td><td>${qf(num(p.stock))} ${esc(p.unite||'')}</td></tr>`).join('')+'</table>':'<p class="muted small">Rien à signaler.</p>'}</div>
+<div class="card"><h3>Ma boutique (pour les factures)</h3>${F('shop.nom','Nom de la boutique')}${F('shop.adr','Adresse')}${F('shop.tel','Téléphone')}${F('shop.msg','Message en bas de facture')}</div>
+<div class="row"><button class="btn ghost" data-act="xv">Exporter les ventes (CSV)</button><button class="btn ghost" data-act="xs">Exporter le stock (CSV)</button></div>`}
+async function dl(name,data){try{const d=window.claude&&await window.claude.use('downloads');if(!d){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=name;document.body.appendChild(a);a.click();a.remove();toast('Fichier téléchargé : '+name);return}await d.save({filename:name,data});toast('Fichier enregistré : '+name)}catch(e){if(!e||e.code!=='declined')toast('Téléchargement impossible ici')}}
+const needPro=()=>{if(isPro())return false;toast('Réservé au Pro');return true};
+/* ===== Pro ===== */
+function rPro(){const wa=`https://wa.me/${CFG.wa}?text=${encodeURIComponent('Bonjour, je veux activer Gestion Boutique Pro ('+CFG.price+' FCFA). Comment payer ?')}`;
+$('#t-pro').innerHTML=`<h1>Gestion Boutique Pro</h1><div class="card">${isPro()?'<p><span class="pill ok">Pro activé</span> Toutes les fonctions sont débloquées sur cet appareil.</p>':`<div class="big">${fmt(CFG.price)} FCFA <span class="small muted" style="font-weight:400">paiement unique</span></div><ul><li>Produits et clients illimités</li><li>Prêts de céréales avec suivi des retours</li><li>Factures sans mention de l'outil : impression et téléchargement</li><li>Export des ventes et du stock en CSV</li></ul><p class="small muted">Gratuit : ${CFG.freeProd} produits, ${CFG.freeCli} clients, ventes et factures à l'écran.</p>`}</div>
+${isPro()?'':`<h2>Comment activer</h2><ol><li><b>Écrivez sur WhatsApp</b> : vous recevez le numéro de paiement.</li><li><b>Payez par Orange Money ou Moov Money</b> et envoyez la capture.</li><li><b>Recevez votre code</b> et saisissez-le ci-dessous.</li></ol><a class="btn" href="${wa}" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+<div class="card" style="margin-top:14px"><label for="code">Code d'activation</label><input id="code" placeholder="${CFG.prefix}-XXXX-XXXX" autocapitalize="characters"><button class="btn" data-act="activate" style="margin-top:10px">Activer</button></div>`}
+<p class="small muted">Vos données sont enregistrées sur cet appareil. Utilisez l'export CSV pour garder une copie.</p>`}
+/* ===== Vendeur ===== */
+let adminOK=false;
+function rAdmin(){const el=$('#t-admin');
+if(!S.pin){el.innerHTML=`<h1>Espace vendeur</h1><div class="card"><p>Créez un PIN pour protéger votre registre de ventes.</p><label for="pin1">Nouveau PIN</label><input id="pin1" type="password" inputmode="numeric"><button class="btn" data-act="pinset" style="margin-top:10px">Enregistrer</button></div>`;return}
+if(!adminOK){el.innerHTML=`<h1>Espace vendeur</h1><div class="card"><label for="pin2">PIN</label><input id="pin2" type="password" inputmode="numeric"><button class="btn" data-act="pinin" style="margin-top:10px">Entrer</button></div>`;return}
+const tot=S.reg.reduce((a,s)=>a+(+s.prix||0),0);
+el.innerHTML=`<h1>Espace vendeur</h1><div class="grid g2"><div class="card"><div class="small muted">Ventes</div><div class="big">${S.reg.length}</div></div><div class="card"><div class="small muted">Total encaissé</div><div class="big">${fmt(tot)} FCFA</div></div></div>
+<div class="card"><h3>Générer un code après paiement</h3><label for="ac">Nom du client</label><input id="ac"><label for="at">Téléphone (avec indicatif)</label><input id="at" inputmode="tel"><label for="ap">Montant payé (FCFA)</label><input id="ap" type="number" value="${CFG.price}"><button class="btn" data-act="gen" style="margin-top:12px">Générer le code</button><div id="genout"></div></div>
+<div class="card"><h3>Registre</h3>${S.reg.length?`<div style="overflow-x:auto"><table><tr><th>Date</th><th>Client</th><th>Code</th><th>FCFA</th></tr>${S.reg.slice().reverse().map(s=>`<tr><td>${esc(s.date)}</td><td>${esc(s.client)}</td><td>${esc(s.code)}</td><td>${esc(s.prix)}</td></tr>`).join('')}</table></div><button class="btn ghost sm" data-act="csv" style="margin-top:10px">Exporter (CSV)</button>`:'<p class="muted">Aucune vente.</p>'}</div>`}
+/* ===== Événements ===== */
+const q2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-t],[data-act]');if(!b)return;
+if(b.dataset.t&&!b.dataset.act){if(b.dataset.t==='fac')curInv=null;go(b.dataset.t);return}
+const a=b.dataset.act,i=+b.dataset.i;
+if(a==='cadd'){const p=S.prods.find(x=>String(x.id)===$('#vp').value);const qt=num($('#vq').value);if(!p||qt<=0){toast('Quantité invalide');return}
+const dej=S.cart.filter(l=>l.pid===p.id).reduce((s,l)=>s+l.qte,0);if(dej+qt>num(p.stock)){toast('Stock insuffisant : '+qf(num(p.stock))+' disponible');return}
+S.cart.push({pid:p.id,nom:p.nom,qte:qt,pv:num(p.pv),pa:num(p.pa)});save();rVente()}
+else if(a==='cdel'){S.cart.splice(i,1);save();rVente()}
+else if(a==='cok'){if(!S.cart.length)return;const total=cartTotal(),mode=$('#vm').value,cid=$('#vc').value?+$('#vc').value:null;
+if(mode==='Crédit'&&!cid){toast('Choisissez un client pour un crédit');return}
+const paye=mode==='Comptant'?total:Math.min(total,Math.max(0,num($('#vpay').value)));
+S.cart.forEach(l=>{const p=S.prods.find(x=>x.id===l.pid);if(p)p.stock=String(num(p.stock)-l.qte)});
+const id=S.next++;S.sales.push({id,n:'F-'+String(S.fn++).padStart(4,'0'),date:today(),cid,lines:S.cart.slice(),total,paye,mode});S.cart=[];save();toast('Vente enregistrée');curInv=id;go('fac')}
+else if(a==='padd'){if(!isPro()&&S.prods.length>=CFG.freeProd){toast('Limite gratuite atteinte : passez Pro');return}S.prods.push({id:S.next++});save();rStock()}
+else if(a==='pdel'){S.prods.splice(i,1);save();rStock()}
+else if(a==='sin'){const v=num($('#aj'+i).value);if(v<=0){toast('Quantité invalide');return}S.prods[i].stock=String(num(S.prods[i].stock)+v);save();rStock();toast('Stock mis à jour')}
+else if(a==='cladd'){if(!isPro()&&S.cli.length>=CFG.freeCli){toast('Limite gratuite atteinte : passez Pro');return}S.cli.push({id:S.next++});save();rCli()}
+else if(a==='cldel'){S.cli.splice(i,1);save();rCli()}
+else if(a==='enc'){const v=num($('#en'+i).value);if(v<=0){toast('Montant invalide');return}S.pay.push({cid:S.cli[i].id,date:today(),m:v});save();rCli();toast('Paiement enregistré')}
+else if(a==='ladd'){const cid=+$('#lc').value,cer=$('#ln').value.trim(),qt=num($('#lq').value);if(!cid||!cer||qt<=0){toast('Client, céréale et quantité requis');return}S.loans.unshift({cid,cer,qte:qt,rendre:num($('#lr').value)||qt,lim:$('#ld').value,date:today(),ret:[]});save();rCer()}
+else if(a==='lret'){const v=num($('#lr'+i).value);if(v<=0){toast('Quantité invalide');return}(S.loans[i].ret=S.loans[i].ret||[]).push({d:today(),q:v});save();rCer()}
+else if(a==='ldel'){S.loans.splice(i,1);save();rCer()}
+else if(a==='fopen'){curInv=i;rFac()}
+else if(a==='fback'){curInv=null;rFac()}
+else if(a==='fprint'){if(needPro())return;document.body.classList.add('pinv');try{window.print()}catch(x){toast('Impression bloquée ici. Utilisez Télécharger.')}setTimeout(()=>document.body.classList.remove('pinv'),800)}
+else if(a==='fdl'){if(needPro())return;const s=S.sales.find(x=>x.id===curInv);dl('Facture_'+s.n+'.html','<html><head><meta charset="utf-8"><style>body{font-family:Arial;font-size:11pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:4px}.r{text-align:right}</style></head><body>'+invHTML(s)+'</body></html>')}
+else if(a==='xv'){if(needPro())return;dl('ventes.csv',['facture,date,client,mode,total,paye,reste'].concat(S.sales.map(s=>[s.n,s.date,q2(cliName(s.cid)),s.mode,s.total,s.paye,s.total-s.paye].join(','))).join('\n'))}
+else if(a==='xs'){if(needPro())return;dl('stock.csv',['produit,unite,prix_achat,prix_vente,stock,seuil'].concat(S.prods.map(p=>[q2(p.nom),q2(p.unite),num(p.pa),num(p.pv),num(p.stock),num(p.seuil)].join(','))).join('\n'))}
+else if(a==='activate'){const c=$('#code').value.trim().toUpperCase();if(okCode(c)){S.pro=c;save();toast('Pro activé. Merci !');rPro();badge()}else toast('Code invalide. Vérifiez la saisie.')}
+else if(a==='pinset'){const p=$('#pin1').value.trim();if(p.length<4){toast('Au moins 4 caractères');return}S.pin=String(h53('pin'+p));adminOK=true;save();rAdmin()}
+else if(a==='pinin'){if(String(h53('pin'+$('#pin2').value.trim()))===S.pin){adminOK=true;rAdmin()}else toast('PIN incorrect')}
+else if(a==='gen'){const cl=$('#ac').value.trim();if(!cl){toast('Nom requis');return}const c=mkCode(),tel=$('#at').value.replace(/\D/g,'');
+S.reg.push({code:c,client:cl,tel,prix:+$('#ap').value||CFG.price,date:today()});save();
+const msg=`Bonjour ${cl}, merci pour votre paiement. Votre code Gestion Boutique Pro : ${c}. Ouvrez l'outil, allez dans « Passer Pro » et saisissez-le.`;
+rAdmin();$('#genout').innerHTML=`<div class="lock" style="background:var(--good-bg);color:var(--good)"><b>Code : ${c}</b><div class="row" style="margin-top:8px"><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${tel}?text=${encodeURIComponent(msg)}">Envoyer par WhatsApp</a></div></div>`}
+else if(a==='csv')dl('ventes-gestion-boutique.csv',['date,client,telephone,code,fcfa'].concat(S.reg.map(s=>[s.date,q2(s.client),s.tel,s.code,s.prix].join(','))).join('\n'))});
+document.addEventListener('input',e=>{const p=e.target.dataset&&e.target.dataset.p;if(!p)return;setP(p,e.target.value);save()});
+let lt=0,ltt;$('#logo').addEventListener('click',()=>{lt++;clearTimeout(ltt);ltt=setTimeout(()=>lt=0,2000);if(lt>=5){lt=0;$('#tabs').hidden=true;go('admin')}});
+load();$('#tabs').innerHTML=TABS.map(t=>`<button role="tab" data-t="${t[0]}">${t[1]}</button>`).join('');go('vente');
+</script>
+</body>
+</html>
